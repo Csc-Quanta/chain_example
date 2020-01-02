@@ -1,0 +1,17 @@
+locust:
+  concurrency: 30
+  prometheus:
+    push_host: 172.16.211.36:9091
+    jobName: blockChain
+  master:
+    host: 127.0.0.1
+    users: 50
+    usersSecond: 20
+    runTime: 1h30m
+    noWeb: true
+  slave:
+    noWeb: true
+    templateName: Tx
+    list:
+      http://85.62.0.234:38000: data_051.csv
+      http://85.62.0.236:38000: data_050.csv

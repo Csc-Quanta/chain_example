@@ -1,0 +1,25 @@
+from locust import TaskSet, task, between
+
+from base.LocustBase import BCLocust
+
+"""
+区块链转账
+@author lance
+2019-12-30
+"""
+
+
+class %(class_name)sTaskSet(TaskSet):
+
+    @task
+    def transfer(self):
+        self.locust.next()
+        d = self.locust.next()
+        self.client.tx(d['faddr'], d['fkey'], d['taddr'], d['amount'])
+
+
+class %(class_name)s(BCLocust):
+    task_set = %(class_name)sTaskSet
+    wait_time = between(0.01, 0.5)
+    host = "%(host)s"
+    data_file = "%(data_file)s"

@@ -1,0 +1,38 @@
+## 配置依赖
+```
+pip install robotframework locust geventhttpclient prometheus_client paramiko
+
+pip install pyyaml
+```
+
+## 配置压测相关
+```ymal
+locust:
+  concurrency: 3
+  Prometheus:
+    push_host: 172.16.211.36:9091
+    jobName: blockChain
+  master:
+    host: 127.0.0.1
+    users: 2
+    usersSecond: 2
+    runTime: 2m
+    noWeb: true
+  slave:
+    noWeb: true
+    templateName: Tx
+    list:
+      http://85.62.0.234:38000: data_051.csv
+      http://85.62.0.236:38000: data_050.csv
+```
+
+## 启动Master
+```
+ python RunMaster.py
+```
+
+## 启动Slave
+如果需要单独启动slava, 只需要设置master.host=''即可
+```
+ python RunSlave.py
+```
