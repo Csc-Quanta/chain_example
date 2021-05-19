@@ -1,9 +1,12 @@
 import json
 import logging
 import time
-
+import os
+import sys
 import requests
 from geventhttpclient import HTTPClient, URL
+
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 from config import settings, application
 
@@ -15,14 +18,14 @@ class BlockChainClient(object):
     """
     区块链测试客户端
     """
-    host = 'http://localhost:8000'
+    host = 'http://113.31.107.126'
+    port = '38000'
     headers = {"Content-Type": "application/json"}
-    url = None
-    req = None
 
-    def __init__(self, host='http://localhost:8000', concurrency=application.data['locust']['concurrency']):
+    def __init__(self, host='http://113.31.107.126', port='38000', concurrency=application.data['locust']['concurrency']):
         self.host = host
-        self.url = URL(self.host)
+        self.port = port
+        self.url = URL(self.host + ':' + self.port)
         self.req = HTTPClient.from_url(self.url, concurrency=concurrency)
 
         self._dict = {
@@ -359,7 +362,7 @@ class InterFaceRequests(object):
             # print(basic_params)
         return basic_params
 
-    def post_methond(self, ip_port, api_path, data):
+    def post_method(self, ip_port, api_path, data):
         """
         发送post请求的简单封装。
         :param ip_port: 请求的ip和端口号
@@ -407,7 +410,7 @@ class InterFaceRequests(object):
         url = ip_port + api_path
         log.info(f"获取秘钥对地址：{url}")
         data = ""
-        res = self.post_methond(ip_port=ip_port, api_path=api_path, data=data)
+        res = self.post_method(ip_port=ip_port, api_path=api_path, data=data)
         # result = self.format_data(data=res)
         # log.info(f"\n获取秘钥对返回：\n{result}\n")
         response = eval(res)
@@ -453,7 +456,7 @@ class InterFaceRequests(object):
             req_result = self.format_data(data=data)
             log.info(f"主币交易请求：\n{req_result}")
             # 发送请求数据
-            res = self.post_methond(ip_port=ip_port, api_path=api_path, data=data)
+            res = self.post_method(ip_port=ip_port, api_path=api_path, data=data)
             result = self.format_data(data=res)
             log.info(f"主币交易返回：\n{result}")
             tx_hash = eval(res).get('txHash')
@@ -502,7 +505,7 @@ class InterFaceRequests(object):
             req_result = self.format_data(data)
             log.info(f"token交易请求：\n{req_result}")
             # 发送请求数据
-            res = self.post_methond(ip_port=ip_port, api_path=api_path, data=data)
+            res = self.post_method(ip_port=ip_port, api_path=api_path, data=data)
             result = self.format_data(res)
             log.info(f"token交易返回：\n{result}")
             tx_hash = eval(res).get('txHash')
@@ -525,7 +528,7 @@ class InterFaceRequests(object):
         log.info("等待交易入块···")
         n = 0
         while True:
-            res = self.post_methond(ip_port=ip_port, api_path=api_path, data=data)
+            res = self.post_method(ip_port=ip_port, api_path=api_path, data=data)
             # print(res)
             n += 1
             print(n, "···")
@@ -553,7 +556,7 @@ class InterFaceRequests(object):
         log.info(f"查询账户信息地址：{url}")
         data = {"address": address}
         log.info(f"查询账户请求：\n{data}")
-        res = self.post_methond(ip_port=ip_port, api_path=api_path, data=data)
+        res = self.post_method(ip_port=ip_port, api_path=api_path, data=data)
         result = self.format_data(data=res)
         log.info(f"查询账户信息返回：\n{result}")
         response = eval(res)
@@ -582,7 +585,7 @@ class InterFaceRequests(object):
         }
         result_1 = self.format_data(data=data)
         log.info(f"创建token20请求数据：\n{result_1}")
-        rep = self.post_methond(ip_port=ip_port, api_path=api_path, data=data)
+        rep = self.post_method(ip_port=ip_port, api_path=api_path, data=data)
         result_2 = self.format_data(data=rep)
         log.info(f"创建token20返回数据：\n{result_2}")
         response = eval(rep)
@@ -611,7 +614,7 @@ class InterFaceRequests(object):
         }
         json_data = self.format_data(data)
         log.info(f"增发token请求：\n{json_data}")
-        res = self.post_methond(ip_port=ip_port, api_path=api_path, data=data)
+        res = self.post_method(ip_port=ip_port, api_path=api_path, data=data)
         result = self.format_data(res)
         log.info(f"增发token返回：\n{result}")
         response = eval(res)
@@ -627,7 +630,7 @@ class InterFaceRequests(object):
         url = ip_port + api_path
         log.info(f"获取最新区块地址：{url}")
         data = ""
-        res = self.post_methond(ip_port=ip_port, api_path=api_path, data=data)
+        res = self.post_method(ip_port=ip_port, api_path=api_path, data=data)
         result = self.format_data(res)
         log.info(f"获取最新区块返回：\n{result}")
         response = eval(res)
@@ -656,7 +659,7 @@ class InterFaceRequests(object):
         }
         json_data = self.format_data(data)
         log.info(f"token销毁请求：\n{json_data}")
-        res = self.post_methond(ip_port=ip_port, api_path=api_path, data=data)
+        res = self.post_method(ip_port=ip_port, api_path=api_path, data=data)
         result = self.format_data(res)
         log.info(f"token销毁返回：\n{result}")
         response = eval(res)
@@ -695,7 +698,7 @@ class InterFaceRequests(object):
             req_result = self.format_data(data)
             log.info(f"创建token721请求数据：\n{req_result}")
             # 发送创建token721请求
-            res = self.post_methond(ip_port=ip_port, api_path=api_path, data=data)
+            res = self.post_method(ip_port=ip_port, api_path=api_path, data=data)
             result = self.format_data(res)
             log.info(f"创建token721返回：\n{result}")
             response = eval(res)
@@ -736,7 +739,7 @@ class InterFaceRequests(object):
         req_result = self.format_data(data)
         log.info(f"token721交易请求：\n{req_result}")
         # 发送创建token721请求
-        res = self.post_methond(ip_port=ip_port, api_path=api_path, data=data)
+        res = self.post_method(ip_port=ip_port, api_path=api_path, data=data)
         result = self.format_data(res)
         log.info(f"token721交易返回：\n{result}")
         response = eval(res)
