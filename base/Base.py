@@ -14,11 +14,11 @@ logging.basicConfig(format='%(asctime)-15s %(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
-class BlockChainClient(object):
+class BlockchainClient(object):
     """
     区块链测试客户端
     """
-    host = 'http://113.31.107.126'
+    host = 'http://113.31.107.126' # temporary
     port = '38000'
     headers = {"Content-Type": "application/json"}
 
@@ -254,7 +254,7 @@ class BlockChainClient(object):
                 r = t.get('status') == 'D'
                 return r, t
             else:
-                return 1 == 0, {}
+                return False, {}
         else:
             raise RuntimeError(f"remote http error, status={response.status_code}, result={response.content}")
 
@@ -265,12 +265,14 @@ class BlockChainClient(object):
         :param _waitms: ，如果交易成功则立即返回，否则等待的毫秒数
         :return: 是否成功, 交易详情
         """
+        _counter = _waitms
+
         r, t = self._check_tx_ex(_tx)
-        while _waitms > 0 and not r:
+        while _counter > 0 and not r:
             time.sleep(0.1)
-            _waitms = _waitms - 100
+            _counter = _counter - 100
             r, t = self._check_tx_ex(_tx)
-        return r, t
+        return r, t, _waitms - _counter
 
     def _check_tx(self, _tx):
         """
@@ -327,21 +329,21 @@ class BlockChainClient(object):
 
     def _get_account_balance(self, _addr):
         acct = self._get_account(_addr)
-        if acct and acct['balance']:
+        if acct and acct.get('balance'):
             return int(acct['balance'])
         else:
             return 0
 
     def _get_account_nonce(self, _addr):
         acct = self._get_account(_addr)
-        if acct and acct['nonce']:
+        if acct and acct.get('nonce'):
             return acct['nonce']
         else:
             return 0
 
     def _get_account_token(self, _addr, _token):
         acct = self._get_account(_addr)
-        if acct and acct['tokens']:
+        if acct and acct.get('tokens'):
             for t in acct['tokens']:
                 if t and t['token'] == _token:
                     return int(t['balance'][:-18])

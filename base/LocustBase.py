@@ -3,10 +3,10 @@ from collections import deque
 
 from locust import Locust, events
 
-from base.Base import BlockChainClient
+from base.Base import BlockchainClient
 
 
-class BCWrapper(BlockChainClient):
+class BCWrapper(BlockchainClient):
     host = None
 
     def __init__(self, host):
